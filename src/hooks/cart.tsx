@@ -59,9 +59,38 @@ const CartProvider: React.FC = ({ children }) => {
     });
   }, []);
 
-  const decrement = useCallback(async id => {
-    // TODO DECREMENTS A PRODUCT QUANTITY IN THE CART
-  }, []);
+  const decrement = useCallback(
+    async id => {
+      const productsToDecrement = products.filter(product => product.id !== id);
+
+      const newProduct = products.find(product => product.id === id);
+
+      if (newProduct && newProduct.quantity > 1) {
+        setProducts(product => {
+          const productsToUpdate = product.map(element =>
+            element.id === id
+              ? { ...element, quantity: element.quantity - 1 }
+              : element,
+          );
+
+          AsyncStorage.setItem(
+            '@GoMarketplace:cartProducts',
+            JSON.stringify(productsToUpdate),
+          );
+
+          return productsToUpdate;
+        });
+      } else {
+        await AsyncStorage.setItem(
+          '@GoMarketplace:cartProducts',
+          JSON.stringify([...productsToDecrement]),
+        );
+
+        setProducts(productsToDecrement);
+      }
+    },
+    [products],
+  );
 
   const addToCart = useCallback(
     async product => {

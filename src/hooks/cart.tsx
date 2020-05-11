@@ -77,6 +77,11 @@ const CartProvider: React.FC = ({ children }) => {
       };
 
       setProducts(prevState => [...prevState, productToAdd]);
+
+      await AsyncStorage.setItem(
+        '@GoMarketplace:cartProducts',
+        JSON.stringify(products),
+      );
     },
     [products, increment],
   );
